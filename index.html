@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>❤️ Rencontres</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #fff0f5;
+      color: #333;
+    }
+
+    header {
+      background: #e91e63;
+      color: white;
+      text-align: center;
+      padding: 25px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 25px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: #e91e63;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #c2185b;
+    }
+
+    .wave {
+      background: #1a73e8;
+    }
+
+    .profil {
+      border-top: 1px solid #ddd;
+      padding: 15px 0;
+    }
+
+    #profils {
+      display: none;
+    }
+
+    .message {
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>❤️ Rencontres</h1>
+  <p>Fais de nouvelles rencontres</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Créer mon profil</h2>
+
+    <input type="text" id="nom" placeholder="Ton prénom">
+
+    <input type="number" id="age" placeholder="Ton âge" min="18">
+
+    <select id="genre">
+      <option value="">Choisir ton genre</option>
+      <option>Femme</option>
+      <option>Homme</option>
+    </select>
+
+    <input type="text" id="ville" placeholder="Ta ville">
+
+    <p id="message" class="message"></p>
+  </div>
+
+  <div class="card">
+    <h2>🔐 Accès aux rencontres</h2>
+
+    <p>
+      L'accès aux profils et aux messages coûte
+      <strong>200 FCFA</strong>.
+    </p>
+
+    <button class="wave" onclick="payer()">
+      💙 Payer 200 FCFA avec Wave
+    </button>
+
+    <p id="paiementMessage" class="message"></p>
+  </div>
+
+  <div class="card" id="profils">
+
+    <h2>💕 Profils disponibles</h2>
+
+    <div class="profil">
+      <h3>👩 Aïcha</h3>
+      <p>25 ans — Abidjan</p>
+      <button onclick="message('Aïcha')">💬 Envoyer un message</button>
+    </div>
+
+    <div class="profil">
+      <h3>👨 Kevin</h3>
+      <p>28 ans — Abidjan</p>
+      <button onclick="message('Kevin')">💬 Envoyer un message</button>
+    </div>
+
+    <div class="profil">
+      <h3>👩 Grâce</h3>
+      <p>24 ans — Bouaké</p>
+      <button onclick="message('Grâce')">💬 Envoyer un message</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+async function payer() {
+
+  const nom = document.getElementById("nom").value.trim();
+  const age = Number(document.getElementById("age").value);
+  const ville = document.getElementById("ville").value.trim();
+  const message = document.getElementById("paiementMessage");
+
+  if (!nom || !age || !ville) {
+    message.textContent =
+      "⚠️ Remplis ton prénom, ton âge et ta ville avant de payer.";
+    return;
+  }
+
+  if (age < 18) {
+    message.textContent =
+      "⚠️ L'accès est réservé aux personnes de 18 ans et plus.";
+    return;
+  }
+
+  message.textContent = "⏳ Préparation du paiement Wave...";
+
+  try {
+
+    const response = await fetch("/create-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.payment_url) {
+      throw new Error(
+        data.error || "Impossible de créer le paiement."
+      );
+    }
+
+    window.location.href = data.payment_url;
+
+  } catch (error) {
+
+    message.textContent =
+      "❌ " + error.message;
+  }
+}
+
+function message(nom) {
+  alert("💬 La messagerie avec " + nom + " sera bientôt disponible.");
+}
+</script>
+
+</body>
+</html>
